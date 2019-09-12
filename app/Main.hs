@@ -12,15 +12,17 @@ incRef var = do
     val <- readIORef var
     writeIORef var (val+1)
 
+testIncRef :: IO ()
+testIncRef = do
+    var <- newIORef 42
+    incRef var
+    val <- readIORef var
+    print val
+
 main :: IO ()
-main = withLog $ \lq -> do
-          var <- newIORef 42
-          incRef var
-          val <- readIORef var
-          print val
-
-          mainSanta lq
-
-          testDelay lq
-
-          someFunc lq
+main = do
+    testIncRef
+    withLog $ \lq -> do
+        mainSanta lq
+        testDelay lq
+        someFunc lq
