@@ -27,9 +27,10 @@ source-repository head
 
 library
   exposed-modules:
-      Santa
       LEIA.LEIA
       LEIA.Logging
+      Santa
+      Scratch
   other-modules:
       Paths_leia_fun
   hs-source-dirs:
