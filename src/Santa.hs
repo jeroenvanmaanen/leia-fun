@@ -1,21 +1,21 @@
-module Lib
-    ( someFunc
-    , elf
+module Santa
+    ( elf
     , reindeer
     , newGroup
     , santa
+    , mainSanta
     , awhile
     , testDelay
-    , setupLog
     ) where
+
+-- https://www.schoolofhaskell.com/school/advanced-haskell/beautiful-concurrency/4-the-santa-claus-problem
+-- https://www.microsoft.com/en-us/research/wp-content/uploads/2016/07/mark.pdf
+-- https://simonmar.github.io/bib/papers/async.pdf
 
 import Control.Concurrent.STM
 import Control.Concurrent
 import System.Random
 import System.Log.Caster
-
-someFunc :: IO ()
-someFunc = putStrLn "someFunc"
 
 data Gate = MkGate Int (TVar Int)
 
@@ -102,6 +102,16 @@ santa lq elf_gp rein_gp = do
     chooseGroup gp task = do gates <- awaitGroup gp
                              return (task, gates)
 
+mainSanta :: LogQueue -> IO ()
+mainSanta lq = do
+    elf_group <- newGroup 3
+    sequence_ [ elf lq elf_group n | n <- [1..10] ]
+
+    rein_group <- newGroup 9
+    sequence_ [ reindeer lq rein_group n | n <- [1..9] ]
+
+    awhile (santa lq elf_group rein_group)
+
 awhile :: IO () -> IO ()
 -- Repeatedly perform the action
 awhile act = forever' act 10
@@ -131,19 +141,3 @@ testDelay lq = do
     randomDelay lq 5
     op <- randomOp
     info lq ("Operator (" ++ op ++ ") here, how may I help you?")
-
-setupLog :: IO (LogQueue, IO ())
-setupLog = do
-    chan <- newLogChan
-    lq <- newLogQueue
-
-    relayThreadId <- forkIO $ do
-          relayLog chan LogInfo stdoutListener
-          putStrLn "End relayLog"
-
-    broadcastThreadId <- forkIO $ do
-          broadcastLog lq chan
-          putStrLn "End broadcastLog"
-
-    info lq "----------"
-    return (lq, threadDelay 100000)
