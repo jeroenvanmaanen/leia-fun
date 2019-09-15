@@ -1,10 +1,10 @@
 name:                leia-fun
 version:             0.1.0.0
-github:              "Github username here/leia-fun"
-license:             BSD3
-author:              "Author name here"
-maintainer:          "Author email here"
-copyright:           "2019 Author name here"
+github:              "jeroenvanmaanen/leia-fun"
+license:             LGPL-3
+author:              "Jeroen van Maanen"
+maintainer:          "jeroen@leialearns.org"
+copyright:           "2019 Jeroen van Maanen"
 
 extra-source-files:
 - README.md
@@ -17,13 +17,20 @@ extra-source-files:
 # To avoid duplicated efforts in documentation and dealing with the
 # complications of embedding Haddock markup inside cabal files, it is
 # common to point users to the README.md file.
-description:         Please see the README on GitHub at <https://github.com/Github username here/leia-fun#readme>
+description:         Please see the README on GitHub at <https://github.com/jeroenvanmaanen/leia-fun#readme>
 
 dependencies:
 - base >= 4.7 && < 5
 
 library:
   source-dirs: src
+  dependencies:
+  - stm
+  - random
+  - logging-facade
+  - caster
+  - reflection
+  - fused-effects
 
 executables:
   leia-fun-exe:
