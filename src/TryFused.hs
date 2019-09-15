@@ -16,6 +16,7 @@
 module TryFused
 ( runTeletypeIO
 , tryFused
+, write
 ) where
 
 import Prelude hiding (read)

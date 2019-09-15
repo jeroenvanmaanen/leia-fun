@@ -5,6 +5,7 @@ import LEIA.Logging
 import Santa
 import Scratch
 import TryFused
+import ComposeEffects
 
 main :: IO ()
 main = withLog $ \lq -> do
@@ -13,3 +14,4 @@ main = withLog $ \lq -> do
     testDelay lq
     someFunc lq
     tryFused lq
+    tryComposeEffects
