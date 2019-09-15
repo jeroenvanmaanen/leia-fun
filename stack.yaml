@@ -17,7 +17,7 @@
 #
 # resolver: ./custom-snapshot.yaml
 # resolver: https://example.com/snapshots/2018-01-01.yaml
-resolver: lts-14.5
+resolver: lts-14.6
 
 # User packages to be built.
 # Various formats can be used as shown in the example below.
@@ -34,7 +34,21 @@ packages:
 # These entries can reference officially published versions as well as
 # forks / in-progress versions pinned to a git hash. For example:
 #
-# extra-deps:
+#extra-deps:
+#  - caster-0.0.3.0@sha256:0f3c8f92ca205e2844a6d56727f23507603ae3619c0a57d71b6ac805c346a4c6,2112
+#  - fused-effects-0.5.0.1@sha256:a2f5fcd127afbe57a18e0d6c4edb5fee3d4a50411b1007773e250e69f16f3055,4387
+#  - logging-facade-0.3.0@sha256:d96b8f5b19ba9473552f100d2a5180771fe81c4892ec30906ab06b9ea98344c5,1476
+#  - random-1.1@sha256:7b67624fd76ddf97c206de0801dc7e888097e9d572974be9b9ea6551d76965df,1777
+#  - reflection-2.1.5@sha256:8dca1275d0c12d9711890cf2e89cd1ec341f64b22c133d2e47a56b7f1a896557,3884
+#  - MonadRandom-0.5.1.1@sha256:dc6026d0c95b501b1a40dea0e59e6604a4a9c26319a724d30b0d91c92ba72b3a,1450
+#  - call-stack-0.2.0@sha256:5ce796b78d5f964468ec6fe0717b4e7d0430817f37370c47b3e6b38e345b6643,1202
+#  - fast-builder-0.1.1.0@sha256:b62e71fa42e96ec1ff31997b032a376a4763edd1563f3486b068e5b4934daad2,2801
+#  - unix-time-0.4.7@sha256:c0d971d04561875b908451c563df8728fe6d8639c90e070b244227f13f76ab8e,2570
+#  - unliftio-core-0.1.2.0@sha256:7f9b48adef8e36da0202e6e70a733a5e210263ed4177c93e47a4b3f89694194b,1081
+#  - old-time-1.1.0.3@sha256:c91fbb3ee73d20ccd015842b30f1f29a304893ebe0ae3128b7bbc13d5bb0d4c8,1328
+#  - primitive-0.7.0.0@sha256:ee352d97cc390d8513530029a2213a95c179a66c406906b18d03702c1d9ab8e5,3416
+#  - transformers-compat-0.6.5@sha256:50b00c57bf3fc379ec2477bfc261a2aebc983084488478adb29854f193af4696,5490
+#  - old-locale-1.0.0.7@sha256:fa998be2c7e00cd26a6e9075bea790caaf3932caa3e9497ad69bc20380dd6911,1071
 # - acme-missiles-0.3
 # - git: https://github.com/commercialhaskell/stack.git
 #   commit: e7b331f14bcffb8367cd58fbfc8b40ec7642100a

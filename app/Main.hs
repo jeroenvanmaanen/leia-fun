@@ -4,10 +4,12 @@ import LEIA.LEIA
 import LEIA.Logging
 import Santa
 import Scratch
+import TryFused
 
 main :: IO ()
 main = withLog $ \lq -> do
     testScratch lq
-    mainSanta lq
+    -- mainSanta lq
     testDelay lq
     someFunc lq
+    tryFused lq
