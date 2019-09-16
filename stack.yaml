@@ -78,3 +78,14 @@ packages:
 #
 # Allow a newer minor version of GHC than the snapshot specifies
 # compiler-check: newer-minor
+default-extensions:
+- DeriveAnyClass
+- DeriveFunctor
+- DeriveGeneric
+- DerivingStrategies
+- FlexibleContexts
+- FlexibleInstances
+- GeneralizedNewtypeDeriving
+- MultiParamTypeClasses
+- TypeOperators
+- UndecidableInstances
