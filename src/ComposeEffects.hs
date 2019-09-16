@@ -4,9 +4,8 @@ module ComposeEffects
 
 import Control.Effect
 import Control.Effect.Carrier
-import qualified Control.Effect.Random as RandomEffect
+import Control.Effect.Random
 import Control.Monad.IO.Class
-import qualified System.Random as SystemRandom
 import TryFused (runTeletypeIO, write)
 
 -- random :: (Member RandomEffect.Random sig, Carrier sig m, SystemRandom.RandomGen k) =>  m k
@@ -15,9 +14,11 @@ import TryFused (runTeletypeIO, write)
 tryComposeEffects :: IO ()
 tryComposeEffects = do
 
-  runM . runTeletypeIO . RandomEffect.evalRandomIO $ do
-    g <- RandomEffect.getRandomR (10, 20)
-    liftIO $ print (g ::Integer)
+  runM . runTeletypeIO . evalRandomIO $ do
+    n <- getRandomR (1000, 2000)
+    liftIO $ print (n :: Integer)
+    n <- getRandomR (1000, 2000)
+    liftIO $ print (n :: Integer)
 
     liftIO $ putStrLn ","
     write "There."

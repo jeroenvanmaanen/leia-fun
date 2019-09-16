@@ -24,6 +24,17 @@ dependencies:
 
 library:
   source-dirs: src
+  default-extensions:
+  - DeriveAnyClass
+  - DeriveFunctor
+  - DeriveGeneric
+  - DerivingStrategies
+  - FlexibleContexts
+  - FlexibleInstances
+  - GeneralizedNewtypeDeriving
+  - MultiParamTypeClasses
+  - TypeOperators
+  - UndecidableInstances
   dependencies:
   - stm
   - random
@@ -40,6 +51,17 @@ executables:
     - -threaded
     - -rtsopts
     - -with-rtsopts=-N
+    default-extensions:
+    - DeriveAnyClass
+    - DeriveFunctor
+    - DeriveGeneric
+    - DerivingStrategies
+    - FlexibleContexts
+    - FlexibleInstances
+    - GeneralizedNewtypeDeriving
+    - MultiParamTypeClasses
+    - TypeOperators
+    - UndecidableInstances
     dependencies:
     - leia-fun
 
@@ -51,5 +73,16 @@ tests:
     - -threaded
     - -rtsopts
     - -with-rtsopts=-N
+    default-extensions:
+    - DeriveAnyClass
+    - DeriveFunctor
+    - DeriveGeneric
+    - DerivingStrategies
+    - FlexibleContexts
+    - FlexibleInstances
+    - GeneralizedNewtypeDeriving
+    - MultiParamTypeClasses
+    - TypeOperators
+    - UndecidableInstances
     dependencies:
     - leia-fun
