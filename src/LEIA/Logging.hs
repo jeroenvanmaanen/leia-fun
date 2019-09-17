@@ -7,6 +7,7 @@ import Control.Effect
 import Control.Effect.Carrier
 import Control.Effect.State
 import Control.Effect.Writer
+import Control.Monad
 import Control.Monad.IO.Class
 import GHC.Generics (Generic1)
 import qualified System.Log.Caster as DistCaster
@@ -51,17 +52,15 @@ startLogging = do
           putStrLn "End broadcastLog"
     return (lq, chan)
 
-runLogEffect :: (MonadIO m) => LogCasterIOC m a -> m ((DistCaster.LogQueue, DistCaster.LogChan), a)
+runLogEffect :: (MonadIO m) => LogCasterIOC m a -> m a
 runLogEffect action = do
     (lq, chan) <- liftIO startLogging
 
-    (runState (lq, chan) . runLogCasterIOC) $ do
+    ((liftM snd) . runState (lq, chan) . runLogCasterIOC) $ do
         result <- action
         DistCaster.info lq "----------"
         liftIO $ threadDelay 100000
         return result
-
-    -- liftIO $ threadDelay 100000
 
 newtype LogCasterIOC m a = LogCasterIOC { runLogCasterIOC :: StateC (DistCaster.LogQueue, DistCaster.LogChan) m a }
   deriving newtype (Applicative, Functor, Monad, MonadIO)
