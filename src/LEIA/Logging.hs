@@ -13,16 +13,7 @@ import qualified System.Log.Caster as DistCaster
 
 setupLog :: IO (DistCaster.LogQueue, IO ())
 setupLog = do
-    chan <- DistCaster.newLogChan
-    lq <- DistCaster.newLogQueue
-
-    relayThreadId <- forkIO $ do
-          DistCaster.relayLog chan DistCaster.LogInfo DistCaster.stdoutListener
-          putStrLn "End relayLog"
-
-    broadcastThreadId <- forkIO $ do
-          DistCaster.broadcastLog lq chan
-          putStrLn "End broadcastLog"
+    (lq, chan) <- liftIO startLogging
 
     DistCaster.info lq "----------"
     return (lq, threadDelay 100000)
@@ -46,26 +37,30 @@ debug s = send (Debug s (pure ()))
 info :: (Member LogEffect sig, Carrier sig m) => String -> m ()
 info s = send (Info s (pure ()))
 
--- startLogging :: IO (DistCaster.LogQueue, DistCaster.LogChan)
+startLogging :: IO (DistCaster.LogQueue, DistCaster.LogChan)
+startLogging = do
+    chan <- liftIO DistCaster.newLogChan
+    lq <- liftIO DistCaster.newLogQueue
+
+    relayThreadId <- liftIO . forkIO $ do
+          DistCaster.relayLog chan DistCaster.LogInfo DistCaster.stdoutListener
+          putStrLn "End relayLog"
+
+    broadcastThreadId <- liftIO . forkIO $ do
+          DistCaster.broadcastLog lq chan
+          putStrLn "End broadcastLog"
+    return (lq, chan)
 
 runLogEffect :: (MonadIO m) => LogCasterIOC m a -> m ((DistCaster.LogQueue, DistCaster.LogChan), a)
 runLogEffect action = do
-    (chan, lq) <- liftIO $ do
-        chan <- liftIO DistCaster.newLogChan
-        lq <- liftIO DistCaster.newLogQueue
+    (lq, chan) <- liftIO startLogging
 
-        relayThreadId <- liftIO . forkIO $ do
-              DistCaster.relayLog chan DistCaster.LogInfo DistCaster.stdoutListener
-              putStrLn "End relayLog"
+    (runState (lq, chan) . runLogCasterIOC) $ do
+        result <- action
+        DistCaster.info lq "----------"
+        liftIO $ threadDelay 100000
+        return result
 
-        broadcastThreadId <- liftIO . forkIO $ do
-              DistCaster.broadcastLog lq chan
-              putStrLn "End broadcastLog"
-        return (chan, lq)
-
-    (runState (lq, chan) . runLogCasterIOC) action
-
-    -- DistCaster.info lq "----------"
     -- liftIO $ threadDelay 100000
 
 newtype LogCasterIOC m a = LogCasterIOC { runLogCasterIOC :: StateC (DistCaster.LogQueue, DistCaster.LogChan) m a }
