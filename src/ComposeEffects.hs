@@ -8,9 +8,6 @@ import Control.Effect.Random
 import Control.Monad.IO.Class
 import TryFused (runTeletypeIO, write)
 
--- random :: (Member RandomEffect.Random sig, Carrier sig m, SystemRandom.RandomGen k) =>  m k
--- random = send (RandomEffect.Random pure)
-
 tryComposeEffects :: IO ()
 tryComposeEffects = do
 
