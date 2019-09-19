@@ -1,22 +1,24 @@
 module Scratch
-    ( testScratch
+    ( testScratchE
     ) where
 
+import Control.Effect
+import Control.Effect.Carrier
+import Control.Monad.IO.Class
 import Data.IORef
+import LEIA.Logging
 import System.IO
-import System.Log.Caster
+import qualified System.Log.Caster as LogCaster
 
 incRef :: IORef Int -> IO ()
 incRef var = do
     val <- readIORef var
     writeIORef var (val+1)
 
-testIncRef :: LogQueue -> IO ()
-testIncRef lq = do
-    var <- newIORef 42
-    incRef var
-    val <- readIORef var
-    info lq val
-
-testScratch :: LogQueue -> IO ()
-testScratch = testIncRef
+testScratchE :: (Effect sig, Carrier (LogEffect :+: sig) m, MonadIO m) => m ()
+testScratchE = do
+    val <- liftIO $ do
+      var <- newIORef 665
+      incRef var
+      readIORef var
+    info $ show val

@@ -14,8 +14,8 @@ main :: IO ()
 main = do
   runM . runLogEffect $ do
     info "bliep"
+    testScratchE
   withLog $ \lq -> do
-    testScratch lq
     -- mainSanta lq
     testDelay lq
     someFunc lq
