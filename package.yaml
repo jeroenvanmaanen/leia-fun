@@ -64,6 +64,7 @@ executables:
     - UndecidableInstances
     dependencies:
     - leia-fun
+    - fused-effects
 
 tests:
   leia-fun-test:

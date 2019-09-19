@@ -1,5 +1,10 @@
 module LEIA.Logging
     ( withLog
+    , LogEffect
+    , LogCasterIOC
+    , runLogEffect
+    , debug
+    , info
     ) where
 
 import Control.Concurrent
@@ -64,3 +69,15 @@ runLogEffect action = do
 
 newtype LogCasterIOC m a = LogCasterIOC { runLogCasterIOC :: StateC (DistCaster.LogQueue, DistCaster.LogChan) m a }
   deriving newtype (Applicative, Functor, Monad, MonadIO)
+
+instance (Carrier sig m, Effect sig, MonadIO m) => Carrier (LogEffect :+: sig) (LogCasterIOC m) where
+  eff (L (Debug s k)) = LogCasterIOC (dispatchLog DistCaster.debug s) >> k
+  eff (L (Info  s k)) = LogCasterIOC (dispatchLog DistCaster.info  s) >> k
+  eff (R other)       = LogCasterIOC (eff (R (handleCoercible other)))
+
+dispatchLog :: (Carrier sig m, Effect sig, MonadIO m) => (DistCaster.LogQueue -> String -> IO ()) -> String -> StateC (DistCaster.LogQueue, DistCaster.LogChan) m ()
+dispatchLog delegate s = do
+  (lq, ch) <- get
+  _ <- return (ch :: DistCaster.LogChan)
+  liftIO (delegate lq s)
+  return ()
