@@ -15,9 +15,9 @@ main = do
   runM . runLogEffect $ do
     info "bliep"
     testScratchE
+    someFunc
   withLog $ \lq -> do
     -- mainSanta lq
     testDelay lq
-    someFunc lq
     tryFused lq
     tryComposeEffects

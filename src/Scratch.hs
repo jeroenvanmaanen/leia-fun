@@ -8,7 +8,6 @@ import Control.Monad.IO.Class
 import Data.IORef
 import LEIA.Logging
 import System.IO
-import qualified System.Log.Caster as LogCaster
 
 incRef :: IORef Int -> IO ()
 incRef var = do
