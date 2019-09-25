@@ -16,6 +16,7 @@
 module TryFused
 ( runTeletypeIO
 , tryFused
+, tryFusedE
 , write
 ) where
 
@@ -31,11 +32,11 @@ import System.Log.Caster
 
 tryFused :: LogQueue -> IO ()
 tryFused lq = runM . runTeletypeIO $ do
-  tryX
+  tryFusedE
   info lq "there!"
 
-tryX :: (MonadIO m, Carrier sig m) => TeletypeIOC m ()
-tryX = write "Hi"
+tryFusedE :: (Member Teletype sig, Carrier sig m) => m ()
+tryFusedE = write "Hi"
 
 data Teletype m k
   = Read (String -> m k)

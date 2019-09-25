@@ -7,5 +7,5 @@ import Control.Effect.Carrier
 import Control.Monad.IO.Class
 import LEIA.Logging
 
-someFunc :: (Effect sig, Carrier (LogEffect :+: sig) m, MonadIO m) => m ()
+someFunc :: (Member LogEffect sig, Carrier sig m) => m ()
 someFunc = info "someFunc"

@@ -2,6 +2,7 @@ module Main where
 
 import Control.Concurrent
 import Control.Effect
+import Control.Monad
 import Control.Monad.IO.Class
 import LEIA.LEIA
 import LEIA.Logging
@@ -12,8 +13,9 @@ import ComposeEffects
 
 main :: IO ()
 main = do
-  runM . runLogEffect $ do
+  runM . runLogEffect . runTeletypeIO $ do
     info "bliep"
+    tryFusedE
     testScratchE
     someFunc
   withLog $ \lq -> do

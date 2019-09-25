@@ -14,7 +14,7 @@ incRef var = do
     val <- readIORef var
     writeIORef var (val+1)
 
-testScratchE :: (Effect sig, Carrier (LogEffect :+: sig) m, MonadIO m) => m ()
+testScratchE :: (Member LogEffect sig, Carrier sig m, MonadIO m) => m ()
 testScratchE = do
     val <- liftIO $ do
       var <- newIORef 665
