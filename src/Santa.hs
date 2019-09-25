@@ -5,7 +5,7 @@ module Santa
     , santa
     , mainSanta
     , awhile
-    , testDelay
+    , testDelayE
     ) where
 
 -- https://www.schoolofhaskell.com/school/advanced-haskell/beautiful-concurrency/4-the-santa-claus-problem
@@ -14,8 +14,12 @@ module Santa
 
 import Control.Concurrent.STM
 import Control.Concurrent
+import Control.Effect
+import Control.Effect.Carrier
+import Control.Monad.IO.Class
+import LEIA.Logging
 import System.Random
-import System.Log.Caster
+import qualified System.Log.Caster as Log
 
 data Gate = MkGate Int (TVar Int)
 
@@ -58,51 +62,51 @@ awaitGroup (MkGroup n tv) = do
     writeTVar tv (n,new_g1,new_g2)
     return (g1,g2)
 
-meetInStudy :: LogQueue -> Int -> IO ()
-meetInStudy lq id = info lq $ "Elf " ++ show id ++ " meeting in the study"
+meetInStudy :: Log.LogQueue -> Int -> IO ()
+meetInStudy lq id = Log.info lq $ "Elf " ++ show id ++ " meeting in the study"
 
-deliverToys :: LogQueue -> Int -> IO ()
-deliverToys lq id = info lq $ "Reindeer " ++ show id ++ " delivering toys"
+deliverToys :: Log.LogQueue -> Int -> IO ()
+deliverToys lq id = Log.info lq $ "Reindeer " ++ show id ++ " delivering toys"
 
-helper1 :: LogQueue -> Group -> IO () -> IO ()
+helper1 :: Log.LogQueue -> Group -> IO () -> IO ()
 helper1 lq group do_task = do
     (in_gate, out_gate) <- joinGroup group
     passGate in_gate
     randomDelay lq 1
-    info lq "Doing task"
+    Log.info lq "Doing task"
     do_task
-    info lq "Task done"
+    Log.info lq "Task done"
     passGate out_gate
 
-elf1, reindeer1 :: LogQueue -> Group -> Int -> IO ()
+elf1, reindeer1 :: Log.LogQueue -> Group -> Int -> IO ()
 elf1      lq gp id = helper1 lq gp (meetInStudy lq id)
 reindeer1 lq gp id = helper1 lq gp (deliverToys lq id)
 
-elf :: LogQueue -> Group -> Int -> IO ThreadId
+elf :: Log.LogQueue -> Group -> Int -> IO ThreadId
 elf lq gp id = forkIO (awhile (do randomDelay lq 10
                                   elf1 lq gp id))
 
-reindeer :: LogQueue -> Group -> Int -> IO ThreadId
+reindeer :: Log.LogQueue -> Group -> Int -> IO ThreadId
 reindeer lq gp id = forkIO (awhile (do randomDelay lq 10
                                        reindeer1 lq gp id))
 
-santa :: LogQueue -> Group -> Group -> IO ()
+santa :: Log.LogQueue -> Group -> Group -> IO ()
 santa lq elf_gp rein_gp = do
-    info lq  ">>>"
+    Log.info lq  ">>>"
     (task, (in_gate, out_gate)) <- atomically (orElse
                      (chooseGroup rein_gp "deliver toys")
                      (chooseGroup elf_gp "meet in my study"))
-    info lq $ "Ho! Ho! Ho! let’s " ++ task
+    Log.info lq $ "Ho! Ho! Ho! let’s " ++ task
     operateGate in_gate
               -- Now the helpers do their task
     operateGate out_gate
-    info lq  "<<<"
+    Log.info lq  "<<<"
   where
     chooseGroup :: Group -> String -> STM (String, (Gate,Gate))
     chooseGroup gp task = do gates <- awaitGroup gp
                              return (task, gates)
 
-mainSanta :: LogQueue -> IO ()
+mainSanta :: Log.LogQueue -> IO ()
 mainSanta lq = do
     elf_group <- newGroup 3
     sequence_ [ elf lq elf_group n | n <- [1..10] ]
@@ -122,22 +126,30 @@ awhile act = forever' act 10
         act
         forever' act (n - 1)
 
-randomDelay :: LogQueue -> Int -> IO ()
+randomDelay :: Log.LogQueue -> Int -> IO ()
 -- Delay for a random time between 1 and 1,000,000 microseconds
 randomDelay lq seconds = do
   waitTime <- getStdRandom (randomR (1, seconds * 1000000))
---  info lq $ "Pause: " ++ show waitTime
+--  Log.info lq $ "Pause: " ++ show waitTime
   threadDelay waitTime
---  info lq $ "Resume: " ++ show waitTime
+--  Log.info lq $ "Resume: " ++ show waitTime
 
-randomOp :: IO String
+randomDelayE :: (Member LogEffect sig, Carrier sig m, MonadIO m) => Int -> m ()
+-- Delay for a random time between 1 and 1,000,000 microseconds
+randomDelayE seconds = do
+  waitTime <- liftIO $ getStdRandom (randomR (1, seconds * 1000000))
+  info $ "Pause: " ++ show waitTime
+  liftIO $ threadDelay waitTime
+  info $ "Resume: " ++ show waitTime
+
+randomOp :: (MonadIO m) => m String
 randomOp = do
-    n <- getStdRandom (randomR (0, 3))
+    n <- liftIO $ getStdRandom (randomR (0, 3))
     return (["+", "-", "*", "/"] !! n)
 
-testDelay :: LogQueue -> IO ()
-testDelay lq = do
-    info lq "All our operators are currently busy..."
-    randomDelay lq 5
+testDelayE :: (Member LogEffect sig, Carrier sig m, MonadIO m) => m ()
+testDelayE = do
+    info "All our operators are currently busy..."
+    randomDelayE 5
     op <- randomOp
-    info lq ("Operator (" ++ op ++ ") here, how may I help you?")
+    info $ "Operator (" ++ op ++ ") here, how may I help you?"

@@ -18,8 +18,8 @@ main = do
     tryFusedE
     testScratchE
     someFunc
+    tryComposeEffects
+    testDelayE
   withLog $ \lq -> do
     -- mainSanta lq
-    testDelay lq
-    tryFused lq
-    tryComposeEffects
+    return ()

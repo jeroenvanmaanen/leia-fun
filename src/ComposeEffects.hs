@@ -8,7 +8,7 @@ import Control.Effect.Random
 import Control.Monad.IO.Class
 import TryFused (runTeletypeIO, write)
 
-tryComposeEffects :: IO ()
+tryComposeEffects :: (MonadIO m) => m ()
 tryComposeEffects = do
 
   runM . runTeletypeIO . evalRandomIO $ do
