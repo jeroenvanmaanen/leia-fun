@@ -19,7 +19,5 @@ main = do
     testScratchE
     someFunc
     tryComposeEffects
-    testDelayE
-  withLog $ \lq -> do
-    -- mainSanta lq
-    return ()
+    testDelay
+    mainSanta
