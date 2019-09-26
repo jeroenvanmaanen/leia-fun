@@ -20,4 +20,4 @@ main = do
     someFunc
     tryComposeEffects
     testDelay
-    mainSanta
+    -- mainSanta

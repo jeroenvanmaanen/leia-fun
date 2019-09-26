@@ -5,20 +5,19 @@ module ComposeEffects
 import Control.Effect
 import Control.Effect.Carrier
 import Control.Effect.Random
+import Control.Monad
 import Control.Monad.IO.Class
+import LEIA.Logging
 import TryFused (runTeletypeIO, write)
 
 tryComposeEffects :: (MonadIO m) => m ()
 tryComposeEffects = do
 
-  runM . runTeletypeIO . evalRandomIO $ do
+  runM . runLogEffect . runTeletypeIO . evalRandomIO $ do
+    write "Hello, world!"
     n <- getRandomR (1000, 2000)
-    liftIO $ print (n :: Integer)
+    info $ "n = " ++ (show (n :: Integer))
     n <- getRandomR (1000, 2000)
-    liftIO $ print (n :: Integer)
+    info $ "n = " ++ (show (n :: Integer))
 
-    liftIO $ putStrLn ","
-    write "There."
-    return ()
-
-
+    info "The End."
